@@ -69,7 +69,11 @@ unsafe fn opj_aligned_alloc_n(mut alignment: size_t, mut size: size_t) -> *mut c
   {
     libc::aligned_malloc(size, alignment)
   }
-  #[cfg(not(windows))]
+  #[cfg(target_arch = "wasm32")]
+  {
+    malloc(size)
+  }
+  #[cfg(not(any(windows, target_arch = "wasm32")))]
   {
     let mut ptr = std::ptr::null_mut::<core::ffi::c_void>();
     if libc::posix_memalign(&mut ptr, alignment, size) != 0 {
